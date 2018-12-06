@@ -803,17 +803,23 @@ setGuiColors()
   if(colortheme="blue")
   {
     Gui, Font, s15 cBlue, Tahoma
-    shadowcolor=555555
-    textcolor=0000FF
-    guicolor=0000EF
+    ; shadowcolor=555555
+    ; textcolor=0000FF
+    ; guicolor=0000EF
+    shadowcolor=000000
+    textcolor=FFD300
+    guicolor=EEAA99
     horizontalGrid=Gridh_blue.bmp
     verticalGrid=Gridv_blue.bmp
   }else if(colortheme="black")
   {
     Gui, Font, s15 cBlack, Tahoma
-    shadowcolor=333333
-    textcolor=000000
-    guicolor=333333
+    ; shadowcolor=333333
+    ; textcolor=000000
+    ; guicolor=333333
+    shadowcolor=000000
+    textcolor=FFD300
+    guicolor=EEAA99
     horizontalGrid=Gridh_black.bmp
     verticalGrid=Gridv_black.bmp
   }else{
@@ -845,16 +851,16 @@ creategroups:
     TextLeft := %A_Index%TriggerLeft - ScreenLeft
     TextLeft += Round((%A_Index%TriggerRight - %A_Index%TriggerLeft) / 2) - 5
     RestoreLeft := TextLeft - 50
-    tempTop := triggerTop - 1
-    tempBottom := triggerBottom - 1
-    tempLeft := triggerLeft - 1
-    tempRight := triggerRight - 1
-    tempHeight := tempBottom - tempTop +2
-    tempWidth  := tempRight - tempLeft +2
-    Gui, add, Picture, Y%tempTop%    X%tempLeft% W%tempWidth% H3 ,%A_ScriptDir%\Images\%horizontalGrid%
-    Gui, add, Picture, Y%tempBottom% X%tempLeft% W%tempWidth% H3 ,%A_ScriptDir%\Images\%horizontalGrid%
-    Gui, add, Picture, Y%tempTop% X%tempLeft%  W3 H%tempHeight% ,%A_ScriptDir%\Images\%verticalGrid%
-    Gui, add, Picture, Y%tempTop% X%tempRight% W3 H%tempHeight% ,%A_ScriptDir%\Images\%verticalGrid%
+    tempTop := triggerTop
+    tempBottom := triggerBottom
+    tempLeft := triggerLeft
+    tempRight := triggerRight
+    tempHeight := tempBottom - tempTop
+    tempWidth  := tempRight - tempLeft
+    Gui, add, Picture, Y%tempTop%    X%tempLeft% W%tempWidth% H1 ,%A_ScriptDir%\Images\%horizontalGrid%
+    Gui, add, Picture, Y%tempBottom% X%tempLeft% W%tempWidth% H1 ,%A_ScriptDir%\Images\%horizontalGrid%
+    Gui, add, Picture, Y%tempTop% X%tempLeft%  W1 H%tempHeight% ,%A_ScriptDir%\Images\%verticalGrid%
+    Gui, add, Picture, Y%tempTop% X%tempRight% W1 H%tempHeight% ,%A_ScriptDir%\Images\%verticalGrid%
     
     shadowleft := textleft + 1
     shadowtop := texttop + 1
@@ -862,16 +868,8 @@ creategroups:
     If ShowNumbersFlag
       If GridTop is number
         If GridLeft is number
-          If A_Index < 10 
-          {
-            Gui, add, text, BackGroundTrans c%shadowcolor% X%ShadowLeft% Y%ShadowTop% ,%A_Index%
-            Gui, add, text, BackGroundTrans c%textcolor% X%TextLeft% Y%TextTop% ,%A_Index%
-          }
-          else
-          {
-            Gui, add, text,% "X" ShadowLeft - 6 " Y" ShadowTop "c"shadowcolor  "BackGroundTrans" ,%A_Index%
-            Gui, add, text,% "X" TextLeft - 6 " Y" TextTop "c"textcolor "BackGroundTrans" ,%A_Index%
-          }
+          Gui, add, text, BackGroundTrans c%shadowcolor% X%ShadowLeft% Y%ShadowTop% ,%A_Index%
+          Gui, add, text, BackGroundTrans c%textcolor% X%TextLeft% Y%TextTop% ,%A_Index%
 
 
     RestoreLeftShadow := RestoreLeft + 1
