@@ -125,6 +125,7 @@ ReadIni:
     IniRead,GridName         ,%ScriptDir%,GridSettings     ,GridName,Error
     IniRead,LButtonDrag      ,%ScriptDir%,InterfaceSettings,LButtonDrag,Error
     IniRead,MButtonDrag      ,%ScriptDir%,InterfaceSettings,MButtonDrag,Error
+    IniRead,TripleTapToggle  ,%ScriptDir%,InterfaceSettings,TripleTapToggle,Error
     IniRead,EdgeDrag         ,%ScriptDir%,InterfaceSettings,EdgeDrag,Error
     IniRead,EdgeTime         ,%ScriptDir%,OtherSettings    ,EdgeTime,Error
     IniRead,ShowGroupsFlag   ,%ScriptDir%,OtherSettings    ,ShowGroupsFlag,Error
@@ -153,15 +154,15 @@ ReadIni:
     If(Registered = "Error")
       Registered =
 
-    If (GridName          = "Error" OR LButtonDrag    = "Error" OR MButtonDrag       = "Error" 
-        OR EdgeDrag       = "Error" OR EdgeTime       = "Error" OR ShowGroupsFlag    = "Error" 
-        OR TitleSize      = "Error" OR ShowGroupsFlag = "Error" OR ShowNumbersFlag   = "Error" 
-        OR TitleSize      = "Error" OR GridOrder      = "Error" OR UseCommand        = "Error" 
-        OR CommandHotkey  = "Error" OR UseFastMove    = "Error" OR FastMoveModifiers = "Error" 
-        OR FastMoveMeta   = "Error" OR TitleLeft      = "Error" OR MButtonTimeout    = "Error" 
-        OR Transparency   = "Error" OR Exceptions     = "Error" OR SafeMode          = "Error"
-        OR SequentialMove = "Error" OR DebugMode      = "Error" OR NoTrayIcon        = "Error"
-        OR FirstRun       = "ERROR"
+    If (GridName          = "Error" OR LButtonDrag     = "Error" OR MButtonDrag       = "Error"
+        OR EdgeDrag       = "Error" OR EdgeTime        = "Error" OR ShowGroupsFlag    = "Error"
+        OR TitleSize      = "Error" OR ShowGroupsFlag  = "Error" OR ShowNumbersFlag   = "Error"
+        OR TitleSize      = "Error" OR GridOrder       = "Error" OR UseCommand        = "Error"
+        OR CommandHotkey  = "Error" OR UseFastMove     = "Error" OR FastMoveModifiers = "Error"
+        OR FastMoveMeta   = "Error" OR TitleLeft       = "Error" OR MButtonTimeout    = "Error"
+        OR Transparency   = "Error" OR Exceptions      = "Error" OR SafeMode          = "Error"
+        OR SequentialMove = "Error" OR DebugMode       = "Error" OR NoTrayIcon        = "Error"
+        OR FirstRun       = "ERROR" OR TripleTapToggle = "Error"
         OR DisableTitleButtonsDetection = "Error")
     {
       MsgBox,%error_inifile%
@@ -207,6 +208,7 @@ WriteIni:
   IniWrite,%GridName%         ,%ScriptDir%,GridSettings     ,GridName
   IniWrite,%LButtonDrag%      ,%ScriptDir%,InterfaceSettings,LButtonDrag
   IniWrite,%MButtonDrag%      ,%ScriptDir%,InterfaceSettings,MButtonDrag
+  IniWrite,%TripleTapToggle%  ,%ScriptDir%,InterfaceSettings,TripleTapToggle
   IniWrite,%EdgeDrag%         ,%ScriptDir%,InterfaceSettings,EdgeDrag
   IniWrite,%EdgeTime%         ,%ScriptDir%,OtherSettings    ,EdgeTime
   IniWrite,%ShowGroupsFlag%   ,%ScriptDir%,OtherSettings    ,ShowGroupsFlag

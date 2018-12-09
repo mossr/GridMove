@@ -18,6 +18,7 @@ setlanguage:
     tray_shownumbers=Afficher la nomérotation de grille
     tray_lbuttondrag=Utiliser: Méthode glisser par le titre
     tray_mbuttondrag=Utiliser: Méthode avec bouton central
+    tray_tripletaptoggle=Utilisation: Méthode: du tapotement à trois doigts
     tray_edgedrag=Utiliser: Métode de bordure
     tray_edgetime=Définir le temps de bordure...
     tray_titlesize=Définir la taille de la barre de titre...
@@ -87,6 +88,7 @@ setlanguage:
     tray_shownumbers=Show Numbers On Grid
     tray_lbuttondrag=Use Drag On Window Title method
     tray_mbuttondrag=Use Drag With Middle Button method
+    tray_tripletaptoggle=Use Toggle with three finger tap method
     tray_edgedrag=Use Drag Window To Edge method
     tray_edgetime=Set Edge Time...
     tray_titlesize=Set Title Size...

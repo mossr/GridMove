@@ -475,7 +475,7 @@
   GridTop       = [Monitor1Top]  + [Monitor1Height] /2 + 0.1
   GridRight     = [Monitor1Right]
   GridBottom    = [Monitor1Bottom]
-  GridLeft      = [Monitor1Right] - [Monitor1Width]  / 6
+  GridLeft      = [Monitor1Right] - [Monitor1Width]  / 5.4
 
 [48]
   TriggerTop    = [Monitor1Top]  + [Monitor1Height] *(5/6)

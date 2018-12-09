@@ -3,6 +3,19 @@
 ;date: May 2006
 ;function: Adjusts windows to a predefined or user-defined desktop grid.
 
+  ;; Performance optimizations
+  #NoEnv
+  #MaxHotkeysPerInterval 99000000
+  #HotkeyInterval 99000000
+  #KeyHistory 0
+  ListLines Off
+  Process, Priority, , A
+  SetBatchLines, -1
+  SetKeyDelay, -1, -1
+  SetMouseDelay, -1
+  SetDefaultMouseSpeed, 0
+  SetWinDelay, -1
+
   ;;options:
   MButtonDrag := True ;to be able to drag a window using the 3rd mouse button
   LButtonDrag:=True ;to be able to drag a window by its title
@@ -31,6 +44,11 @@
   Language=EN
   NoTrayIcon:=False
   FirstRun:=True
+
+  ; Three finger tap on track-pad activation (toggle)
+  TripleTapToggle := True ; Menu icon flag
+  TripleTapActive := False ; Indication of 'button pressed'
+  HotKeyTripleTap := False ; Control flag for general use of DropZoneMode
 
   ;Registered=quebec
 
@@ -153,7 +171,7 @@
   HotKey,F12,off
   HotKey,F11,off
 
-#maxthreadsperhotkey,1
+#maxthreadsperhotkey,2
 #singleinstance,force
 #InstallMouseHook 
 #InstallKeybdHook
@@ -257,6 +275,7 @@ createOptionsMenu()
   Menu,options_menu, add, %tray_shownumbers%, Options_ShowNumbers
   Menu,options_menu, add, %tray_lbuttondrag%, Options_LButtonDrag
   Menu,options_menu, add, %tray_mbuttondrag%, Options_MButtonDrag
+  Menu,options_menu, add, %tray_tripletaptoggle%, Options_TripleTapToggle
   Menu,options_menu, add, %tray_edgedrag%, Options_EdgeDrag
   Menu,options_menu, add, %tray_edgetime%, Options_EdgeTime
   Menu,options_menu, add, %tray_titlesize%, Options_TitleSize
@@ -267,6 +286,8 @@ createOptionsMenu()
     Menu,options_menu,Disable, %tray_titlesize%
   If MButtonDrag
     Menu,options_menu,check, %tray_mbuttondrag%
+  If TripleTapToggle
+    Menu,options_menu,check, %tray_tripletaptoggle%
   If EdgeDrag
     Menu,options_menu,check, %tray_edgedrag%
   else
@@ -364,7 +385,13 @@ DropZoneMode:
   
     GetKeyState,State,%hotkey%,P
     If State = U
-        break
+      break
+
+    If (HotKeyTripleTap AND !TripleTapActive)
+    {
+      HotKeyTripleTap := False
+      break
+    }
     
     MouseGetPos, MouseX, MouseY, window,
     flagLButton:=true
@@ -445,9 +472,8 @@ cancel:
   }
 return
   
-;*******************Mbutton method
 
-MButtonMove:
+SetMouseWindowActivation:
   CoordMode,Mouse,Screen
   MouseGetPos, OldMouseX, OldMouseY, Window,
   WinGetTitle,WinTitle,ahk_id %Window%
@@ -456,6 +482,12 @@ MButtonMove:
   WinGet,WinStyle,Style,ahk_id %Window%
   WinGet,WindowId,Id,ahk_id %Window%
   WinGet, WindowProcess , ProcessName, ahk_id %Window%
+  return
+
+;*******************Mbutton method
+
+MButtonMove:
+  GoSub, SetMouseWindowActivation
 
   if SafeMode
   {
@@ -494,6 +526,37 @@ MButtonMove:
   return
 
 ;**********************edge/lbutton method
+
+
+
++^#F22::
+  If TripleTapToggle
+  {
+    TripleTapActive := !TripleTapActive
+    if TripleTapActive
+    {
+      HotKeyTripleTap := True
+      GoSub, F22Move
+    }
+  }
+  Else
+  {
+    HotKeyTripleTap := False
+  }
+  return
+;********************** This is the "key" indication of a triple tap
+
+
+
+F22Move:
+  GoSub, SetMouseWindowActivation
+  Winactivate, ahk_id %window%
+  Hotkey = ; Reset Hotkey
+  GoSub, DropZoneMode
+  return
+;********************** Analogous to MButtonMove
+
+
 
 MousePosition:
   Settimer, MousePosition,off
@@ -837,19 +900,26 @@ creategroups:
   setGuiColors()
   loop,%NGroups%
   {
-    TriggerTop    := %A_Index%TriggerTop - ScreenTop
-    TriggerBottom := %A_Index%TriggerBottom - ScreenTop
-    TriggerLeft   := %A_Index%TriggerLeft - ScreenLeft
-    TriggerRight  := %A_Index%TriggerRight - ScreenLeft
-    TriggerHeight := TriggerBottom - TriggerTop 
-    TriggerWidth  := TriggerRight - TriggerLeft
-    GridTop       := %A_Index%GridTop
-    GridLeft      := %A_Index%GridLeft
+    ; Scaling
+    Scale := GetScale()
+
+    TriggerTop    := (%A_Index%TriggerTop - ScreenTop) / Scale
+    TriggerBottom := (%A_Index%TriggerBottom - ScreenTop) / Scale
+    TriggerLeft   := (%A_Index%TriggerLeft - ScreenLeft) / Scale
+    TriggerRight  := (%A_Index%TriggerRight - ScreenLeft) / Scale
+    TriggerHeight := (TriggerBottom - TriggerTop ) / Scale
+    TriggerWidth  := (TriggerRight - TriggerLeft) / Scale
+    GridTop       := (%A_Index%GridTop) / Scale
+    GridLeft      := (%A_Index%GridLeft) / Scale
     
     TextTop := %A_Index%TriggerTop - ScreenTop
     TextTop += Round((%A_Index%TriggerBottom - %A_Index%TriggerTop) / 2 )- 11
     TextLeft := %A_Index%TriggerLeft - ScreenLeft
     TextLeft += Round((%A_Index%TriggerRight - %A_Index%TriggerLeft) / 2) - 5
+
+    TextTop := TextTop / Scale
+    TextLeft := TextLeft / Scale
+
     RestoreLeft := TextLeft - 50
     tempTop := triggerTop
     tempBottom := triggerBottom
@@ -857,10 +927,10 @@ creategroups:
     tempRight := triggerRight
     tempHeight := tempBottom - tempTop
     tempWidth  := tempRight - tempLeft
-    Gui, add, Picture, Y%tempTop%    X%tempLeft% W%tempWidth% H1 ,%A_ScriptDir%\Images\%horizontalGrid%
-    Gui, add, Picture, Y%tempBottom% X%tempLeft% W%tempWidth% H1 ,%A_ScriptDir%\Images\%horizontalGrid%
-    Gui, add, Picture, Y%tempTop% X%tempLeft%  W1 H%tempHeight% ,%A_ScriptDir%\Images\%verticalGrid%
-    Gui, add, Picture, Y%tempTop% X%tempRight% W1 H%tempHeight% ,%A_ScriptDir%\Images\%verticalGrid%
+    Gui, add, Picture, Y%triggerTop%    X%tempLeft% W%tempWidth% H1 ,%A_ScriptDir%\Images\Grid.bmp
+    Gui, add, Picture, Y%tempBottom% X%tempLeft% W%tempWidth% H1 ,%A_ScriptDir%\Images\Grid.bmp
+    Gui, add, Picture, Y%triggerTop% X%tempLeft%  W1 H%tempHeight% ,%A_ScriptDir%\Images\Grid.bmp
+    Gui, add, Picture, Y%triggerTop% X%tempRight% W1 H%tempHeight% ,%A_ScriptDir%\Images\Grid.bmp
     
     shadowleft := textleft + 1
     shadowtop := texttop + 1
@@ -1060,6 +1130,15 @@ Options_mbuttonDrag:
   reload
 return
   
+Options_TripleTapToggle:
+  If TripleTapToggle
+    TripleTapToggle := false
+  else
+    TripleTapToggle := true
+  GoSub, WriteIni
+  reload
+return
+
 Options_EdgeDrag:
   If EdgeDrag
   {
@@ -1116,7 +1195,7 @@ Options_ShowGrid:
   else
   {
     ShowGroupsFlag := True
-    Menu,options_menu, Check, %tray_show%
+    Menu,options_menu, Check, %tray_showgrid%
     Menu,options_menu,Enable, %tray_shownumbers%
   }
   GoSub, WriteIni
@@ -1436,6 +1515,16 @@ evaluateGrid()
   }
   ngroups -= count
 }
+
+
+GetScale()
+{
+    Scale := A_ScreenDPI / 96 ; Get scaling ratio (where 96 is the normal DPI)
+    Scale := Scale + 0.0005 ; Add small buffer so right trigger edge lines up with the screen
+
+    return Scale
+}
+
 
 Getmonitorsizes()
 {
